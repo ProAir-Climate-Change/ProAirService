@@ -576,12 +576,6 @@ Final price may vary depending on access, system condition and location.
 
 )}
 
-<p style={{fontSize:"13px",color:"#64748b"}}>
-
-Final price may vary depending on access, system condition and location.
-
-</p>
-
 </div>
             <button type="submit" style={buttonStyle} disabled={!detailsComplete || submitting}>
               {submitting ? "Sending..." : "Send service enquiry"}
