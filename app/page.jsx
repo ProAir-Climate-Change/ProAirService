@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const brandOptions = [
   "Daikin",
@@ -103,7 +104,12 @@ export default function Page() {
   const [lastServiced, setLastServiced] = useState("Within 12 months");
   const [enquiryType, setEnquiryType] = useState("Routine service");
   const [timeframe, setTimeframe] = useState("");
-  const [showPrice, setShowPrice] = useState(false);
+  const customerDetailsComplete =
+  fullName.trim() &&
+  phone.trim() &&
+  email.trim() &&
+  postcode.trim();
+  const leadSentRef = useRef(false);
 
 
   const [notes, setNotes] = useState("");
@@ -229,7 +235,27 @@ export default function Page() {
       setSubmitting(false);
     }
   }
+useEffect(() => {
+  if (!customerDetailsComplete || leadSentRef.current) return;
 
+  const sendLead = async () => {
+    try {
+      await fetch("/api/service-lead", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(serviceSummary)
+      });
+
+      leadSentRef.current = true;
+    } catch (error) {
+      console.error("Service lead send failed", error);
+    }
+  };
+
+  sendLead();
+}, [customerDetailsComplete, serviceSummary]);
   return (
     <div
       style={{
@@ -520,7 +546,7 @@ padding:"16px",
 marginTop:"20px"
 }}
 >
-{showPrice && (
+{customerDetailsComplete && (
 
 <div
 style={{
