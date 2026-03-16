@@ -9,62 +9,44 @@ export async function POST(req) {
     const email = await resend.emails.send({
       from: "ProAir Service <onboarding@resend.dev>",
       to: ["contact@proairuk.co.uk"],
-      subject: `New Service Enquiry - ${data.postcode || "No postcode"} - ${data.brand || "Unknown brand"}`,
+
+      subject: "New ProAir Service Enquiry",
+
       html: `
-        <div style="font-family: Arial, sans-serif; color: #0b1b3a; line-height: 1.5;">
-          <h2 style="margin-bottom: 8px;">New ProAir Service Enquiry</h2>
-          <p style="margin-top: 0; color: #475569;">
-            A new service enquiry has been submitted from the ProAir service tool.
-          </p>
+  <h2>New Service Enquiry</h2>
 
-          <h3 style="margin-bottom: 8px;">Customer Details</h3>
-          <p><strong>Full name:</strong> ${data.fullName || "Not provided"}</p>
-          <p><strong>Phone:</strong> ${data.phone || "Not provided"}</p>
-          <p><strong>Email:</strong> ${data.email || "Not provided"}</p>
-          <p><strong>Postcode:</strong> ${data.postcode || "Not provided"}</p>
-          <p><strong>Preferred timeframe:</strong> ${data.timeframe || "Not specified"}</p>
+  <h3>Customer Details</h3>
+  <p><strong>Name:</strong> ${data.fullName}</p>
+  <p><strong>Phone:</strong> ${data.phone}</p>
+  <p><strong>Email:</strong> ${data.email}</p>
+  <p><strong>Postcode:</strong> ${data.postcode}</p>
+  <p><strong>Preferred timeframe:</strong> ${data.timeframe || "Not specified"}</p>
 
-          <h3 style="margin-bottom: 8px;">System Details</h3>
-          <p><strong>Number of indoor units:</strong> ${data.indoorUnits || "Not provided"}</p>
-          <p><strong>Number of outdoor units:</strong> ${data.outdoorUnits || "Not provided"}</p>
-          <p><strong>Brand:</strong> ${data.brand || "Not provided"}</p>
-          <p><strong>System type:</strong> ${data.systemType || "Not provided"}</p>
-          <p><strong>Indoor unit type:</strong> ${data.indoorUnitType || "Not provided"}</p>
-          <p><strong>Approx system age:</strong> ${data.systemAge || "Not specified"}</p>
-          <p><strong>Last serviced:</strong> ${data.lastServiced || "Not specified"}</p>
+  <h3>System Information</h3>
+  <p><strong>Brand:</strong> ${data.brand}</p>
+  <p><strong>System type:</strong> ${data.systemType}</p>
+  <p><strong>Indoor unit type:</strong> ${data.indoorUnitType}</p>
+  <p><strong>Indoor units:</strong> ${data.indoorUnits}</p>
+  <p><strong>Outdoor units:</strong> ${data.outdoorUnits}</p>
 
-          <h3 style="margin-bottom: 8px;">Enquiry Type</h3>
-          <p><strong>Reason for enquiry:</strong> ${data.enquiryType || "Not provided"}</p>
+  <h3>Service Details</h3>
+  <p><strong>Service type:</strong> ${data.serviceType}</p>
+  <p><strong>Units to service:</strong> ${data.unitCount}</p>
+  <p><strong>Last serviced:</strong> ${data.lastServiced}</p>
+  <p><strong>System age:</strong> ${data.systemAge || "Unknown"}</p>
 
-          <h3 style="margin-bottom: 8px;">Estimated Price</h3>
-          <p><strong>Estimated service price:</strong> ${
-            typeof data.servicePrice !== "undefined" && data.servicePrice !== null
-              ? `£${Number(data.servicePrice).toLocaleString()} + VAT`
-              : "Not provided"
-          }</p>
+  <h3>Estimated Price</h3>
+  <p><strong>Guide price:</strong> £${Number(data.servicePrice || 0).toLocaleString()} + VAT</p>
 
-          <h3 style="margin-bottom: 8px;">Fault / Service Notes</h3>
-          <p>${data.notes ? data.notes.replace(/\n/g, "<br/>") : "No additional notes provided"}</p>
-
-          <h3 style="margin-bottom: 8px;">Parking / Access Notes</h3>
-          <p>${data.accessNotes ? data.accessNotes.replace(/\n/g, "<br/>") : "No access notes provided"}</p>
-        </div>
-      `,
+  <h3>Customer Notes</h3>
+  <p>${data.notes ? data.notes : "No additional notes provided"}</p>
+`
     });
 
-    console.log("Service enquiry email sent:", email);
+    return Response.json({ success: true, email });
 
-    return Response.json({
-      success: true,
-      email,
-    });
   } catch (error) {
-    console.error("Service enquiry email failed:", error);
-
-    return Response.json(
-      {
-        success: false,
-        error: String(error),
-      },
-      { status: 500 }
-    );
+    console.error("Email send failed:", error);
+    return Response.json({ success: false, error });
+  }
+}
