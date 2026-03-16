@@ -514,7 +514,9 @@ useEffect(() => {
                 {timeframe ? ` • Timeframe: ${timeframe}` : ""}
               </p>
             </div>
-
+            
+{customerDetailsComplete && (
+<>
             <a href={whatsappHref} target="_blank" rel="noreferrer" style={waStyle}>
               📲 Send this service enquiry to ProAir on WhatsApp
             </a>
@@ -592,7 +594,8 @@ Final price may vary depending on access, system condition and location.
             <button type="submit" style={buttonStyle} disabled={!detailsComplete || submitting}>
               {submitting ? "Sending..." : "Send service enquiry"}
             </button>
-
+</>
+)}
             {submitMessage && (
               <p
                 style={{
