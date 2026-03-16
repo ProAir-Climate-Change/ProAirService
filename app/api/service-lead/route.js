@@ -7,40 +7,64 @@ export async function POST(req) {
     const data = await req.json();
 
     const email = await resend.emails.send({
-      from: "ProAir Estimator <onboarding@resend.dev>",
-      to: ["contact@proairuk.co.uk"], // change this to the email you want leads sent to
-      subject: "New ProAir Estimate Lead",
+      from: "ProAir Service <onboarding@resend.dev>",
+      to: ["contact@proairuk.co.uk"],
+      subject: `New Service Enquiry - ${data.postcode || "No postcode"} - ${data.brand || "Unknown brand"}`,
       html: `
-  <h2>New Estimate Lead</h2>
-  <p><strong>Name:</strong> ${data.name}</p>
-  <p><strong>Phone:</strong> ${data.phone}</p>
-  <p><strong>Email:</strong> ${data.email}</p>
-  <p><strong>Postcode:</strong> ${data.postcode}</p>
-  <p><strong>System selected:</strong> ${data.system}</p>
-  <p><strong>Rooms:</strong> ${data.rooms}</p>
-  <p><strong>Cooling load:</strong> ${data.load} kW</p>
-  <p><strong>Suggested capacity:</strong> ${data.capacity} kW</p>
+        <div style="font-family: Arial, sans-serif; color: #0b1b3a; line-height: 1.5;">
+          <h2 style="margin-bottom: 8px;">New ProAir Service Enquiry</h2>
+          <p style="margin-top: 0; color: #475569;">
+            A new service enquiry has been submitted from the ProAir service tool.
+          </p>
 
-  <h3>Guide prices</h3>
-  <p><strong>Midea Solstice:</strong> £${Number(data.mideaPrice || 0).toLocaleString()}</p>
-  <p><strong>Mitsubishi Electric AY:</strong> £${Number(data.mitsubishiPrice || 0).toLocaleString()}</p>
-  <p><strong>Mitsubishi Zen:</strong> ${
-    data.zenEligible
-      ? `£${Number(data.zenPrice || 0).toLocaleString()}`
-      : "Not available above 5.0kW per room"
-  }</p>
+          <h3 style="margin-bottom: 8px;">Customer Details</h3>
+          <p><strong>Full name:</strong> ${data.fullName || "Not provided"}</p>
+          <p><strong>Phone:</strong> ${data.phone || "Not provided"}</p>
+          <p><strong>Email:</strong> ${data.email || "Not provided"}</p>
+          <p><strong>Postcode:</strong> ${data.postcode || "Not provided"}</p>
+          <p><strong>Preferred timeframe:</strong> ${data.timeframe || "Not specified"}</p>
 
-  <h3>Room breakdown</h3>
-  <pre style="font-family:Arial,sans-serif;white-space:pre-wrap;">${data.roomBreakdown || "No room breakdown provided"}</pre>
+          <h3 style="margin-bottom: 8px;">System Details</h3>
+          <p><strong>Number of indoor units:</strong> ${data.indoorUnits || "Not provided"}</p>
+          <p><strong>Number of outdoor units:</strong> ${data.outdoorUnits || "Not provided"}</p>
+          <p><strong>Brand:</strong> ${data.brand || "Not provided"}</p>
+          <p><strong>System type:</strong> ${data.systemType || "Not provided"}</p>
+          <p><strong>Indoor unit type:</strong> ${data.indoorUnitType || "Not provided"}</p>
+          <p><strong>Approx system age:</strong> ${data.systemAge || "Not specified"}</p>
+          <p><strong>Last serviced:</strong> ${data.lastServiced || "Not specified"}</p>
 
-  <h3>Customer notes</h3>
-  <p>${data.notes ? data.notes : "No additional notes"}</p>
-`
+          <h3 style="margin-bottom: 8px;">Enquiry Type</h3>
+          <p><strong>Reason for enquiry:</strong> ${data.enquiryType || "Not provided"}</p>
+
+          <h3 style="margin-bottom: 8px;">Estimated Price</h3>
+          <p><strong>Estimated service price:</strong> ${
+            typeof data.servicePrice !== "undefined" && data.servicePrice !== null
+              ? `£${Number(data.servicePrice).toLocaleString()} + VAT`
+              : "Not provided"
+          }</p>
+
+          <h3 style="margin-bottom: 8px;">Fault / Service Notes</h3>
+          <p>${data.notes ? data.notes.replace(/\n/g, "<br/>") : "No additional notes provided"}</p>
+
+          <h3 style="margin-bottom: 8px;">Parking / Access Notes</h3>
+          <p>${data.accessNotes ? data.accessNotes.replace(/\n/g, "<br/>") : "No access notes provided"}</p>
+        </div>
+      `,
     });
 
-    return Response.json({ success: true, email });
+    console.log("Service enquiry email sent:", email);
+
+    return Response.json({
+      success: true,
+      email,
+    });
   } catch (error) {
-    console.error("Email send failed:", error);
-    return Response.json({ success: false, error });
-  }
-}
+    console.error("Service enquiry email failed:", error);
+
+    return Response.json(
+      {
+        success: false,
+        error: String(error),
+      },
+      { status: 500 }
+    );
