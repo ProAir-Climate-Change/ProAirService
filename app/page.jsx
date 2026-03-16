@@ -575,13 +575,6 @@ Final price may vary depending on access, system condition and location.
 </div>
 
 )}
-<strong>Estimated service price</strong>
-
-<p style={{fontSize:"22px",marginTop:"6px"}}>
-
-£{servicePrice.toLocaleString()} + VAT
-
-</p>
 
 <p style={{fontSize:"13px",color:"#64748b"}}>
 
