@@ -607,6 +607,36 @@ Final price may vary depending on access, system condition and location.
                 {submitMessage}
               </p>
             )}
+            {!customerDetailsComplete && (
+  <div
+    style={{
+      marginTop: "28px",
+      padding: "18px",
+      borderRadius: "16px",
+      background: "linear-gradient(135deg,#eef4ff,#f8fafc)",
+      border: "1px solid #dbe6ff",
+      textAlign: "center",
+      boxShadow: "0 8px 18px rgba(30,58,138,0.12)"
+    }}
+  >
+    <div style={{ fontSize: "22px", marginBottom: "6px" }}>
+      🔓 Unlock your service price
+    </div>
+
+    <p style={{ margin: "0", fontSize: "14px", color: "#475569" }}>
+      Enter your contact details at the top of the page to instantly reveal your
+      estimated service cost and send your enquiry to a ProAir engineer.
+    </p>
+
+    <p style={{ marginTop: "10px", fontSize: "13px", color: "#64748b" }}>
+      ✔ Takes less than 30 seconds  
+      <br />
+      ✔ No obligation quote  
+      <br />
+      ✔ Local F-Gas certified engineers
+    </p>
+  </div>
+)}
           </form>
         </div>
       </div>
