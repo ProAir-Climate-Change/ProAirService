@@ -103,12 +103,61 @@ export default function Page() {
   const [lastServiced, setLastServiced] = useState("Within 12 months");
   const [enquiryType, setEnquiryType] = useState("Routine service");
   const [timeframe, setTimeframe] = useState("");
+  const [serviceType, setServiceType] = useState("service");
+const [unitType, setUnitType] = useState("wall");
+const [unitCount, setUnitCount] = useState(1);
 
   const [notes, setNotes] = useState("");
   const [accessNotes, setAccessNotes] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
+
+  const servicePrice = useMemo(() => {
+
+let price = 0
+
+if(serviceType === "service"){
+
+if(unitType === "wall" || unitType === "floor"){
+
+if(unitCount === 1) price = 125
+else if(unitCount <= 4) price = unitCount * 60
+else price = unitCount * 45
+
+}
+
+if(unitType === "cassette" || unitType === "ducted"){
+
+if(unitCount === 1) price = 150
+else if(unitCount <= 4) price = unitCount * 70
+else price = unitCount * 55
+
+}
+
+}
+
+if(serviceType === "deep"){
+
+if(unitType === "wall" || unitType === "floor"){
+
+if(unitCount === 1) price = 180
+else price = unitCount * 120
+
+}
+
+if(unitType === "cassette" || unitType === "ducted"){
+
+if(unitCount === 1) price = 220
+else price = unitCount * 180
+
+}
+
+}
+
+return price
+
+}, [serviceType, unitType, unitCount])
 
   const detailsComplete =
     fullName.trim() &&
@@ -465,7 +514,30 @@ export default function Page() {
               <br />
               ✔ Domestic and small commercial systems
             </div>
+<div
+style={{
+background:"#eef4ff",
+borderRadius:"12px",
+padding:"16px",
+marginTop:"20px"
+}}
+>
 
+<strong>Estimated service price</strong>
+
+<p style={{fontSize:"22px",marginTop:"6px"}}>
+
+£{servicePrice.toLocaleString()} + VAT
+
+</p>
+
+<p style={{fontSize:"13px",color:"#64748b"}}>
+
+Final price may vary depending on access, system condition and location.
+
+</p>
+
+</div>
             <button type="submit" style={buttonStyle} disabled={!detailsComplete || submitting}>
               {submitting ? "Sending..." : "Send service enquiry"}
             </button>
