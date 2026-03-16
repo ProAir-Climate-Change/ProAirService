@@ -238,20 +238,26 @@ useEffect(() => {
   if (!customerDetailsComplete || leadSentRef.current) return;
 
   const sendLead = async () => {
-    try {
-      await fetch("/api/service-lead", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(serviceSummary)
-      });
+  try {
+    const response = await fetch("/api/service-lead", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(serviceSummary)
+    });
 
-      leadSentRef.current = true;
-    } catch (error) {
-      console.error("Service lead send failed", error);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "Service lead request failed");
     }
-  };
+
+    leadSentRef.current = true;
+    console.log("Service lead sent successfully");
+  } catch (error) {
+    console.error("Service lead send failed", error);
+  }
+};
 
   sendLead();
 }, [customerDetailsComplete, serviceSummary]);
