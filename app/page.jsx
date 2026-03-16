@@ -103,6 +103,7 @@ export default function Page() {
   const [lastServiced, setLastServiced] = useState("Within 12 months");
   const [enquiryType, setEnquiryType] = useState("Routine service");
   const [timeframe, setTimeframe] = useState("");
+  const [showPrice, setShowPrice] = useState(false);
 
 
   const [notes, setNotes] = useState("");
@@ -519,7 +520,34 @@ padding:"16px",
 marginTop:"20px"
 }}
 >
+{showPrice && (
 
+<div
+style={{
+background:"#eef4ff",
+borderRadius:"12px",
+padding:"16px",
+marginTop:"20px"
+}}
+>
+
+<strong>Estimated service price</strong>
+
+<p style={{fontSize:"22px",marginTop:"6px"}}>
+
+£{servicePrice.toLocaleString()} + VAT
+
+</p>
+
+<p style={{fontSize:"13px",color:"#64748b"}}>
+
+Final price may vary depending on access, system condition and location.
+
+</p>
+
+</div>
+
+)}
 <strong>Estimated service price</strong>
 
 <p style={{fontSize:"22px",marginTop:"6px"}}>
