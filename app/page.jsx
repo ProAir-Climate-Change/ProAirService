@@ -103,9 +103,7 @@ export default function Page() {
   const [lastServiced, setLastServiced] = useState("Within 12 months");
   const [enquiryType, setEnquiryType] = useState("Routine service");
   const [timeframe, setTimeframe] = useState("");
-  const [serviceType, setServiceType] = useState("service");
-const [unitType, setUnitType] = useState("wall");
-const [unitCount, setUnitCount] = useState(1);
+
 
   const [notes, setNotes] = useState("");
   const [accessNotes, setAccessNotes] = useState("");
@@ -114,51 +112,50 @@ const [unitCount, setUnitCount] = useState(1);
   const [submitMessage, setSubmitMessage] = useState("");
 
   const servicePrice = useMemo(() => {
+  let price = 0;
 
-let price = 0
+  const count = Number(indoorUnits);
 
-if(serviceType === "service"){
+  const isDeep =
+    enquiryType === "Deep clean";
 
-if(unitType === "wall" || unitType === "floor"){
+  const isWallOrFloor =
+    indoorUnitType === "Wall mounted" ||
+    indoorUnitType === "Floor mounted";
 
-if(unitCount === 1) price = 125
-else if(unitCount <= 4) price = unitCount * 60
-else price = unitCount * 45
+  const isCassetteOrDucted =
+    indoorUnitType === "Cassette" ||
+    indoorUnitType === "Ducted grille";
 
-}
+  if (!isDeep) {
+    if (isWallOrFloor) {
+      if (count === 1) price = 125;
+      else if (count <= 4) price = count * 60;
+      else price = count * 45;
+    }
 
-if(unitType === "cassette" || unitType === "ducted"){
+    if (isCassetteOrDucted) {
+      if (count === 1) price = 150;
+      else if (count <= 4) price = count * 70;
+      else price = count * 55;
+    }
+  }
 
-if(unitCount === 1) price = 150
-else if(unitCount <= 4) price = unitCount * 70
-else price = unitCount * 55
+  if (isDeep) {
+    if (isWallOrFloor) {
+      if (count === 1) price = 180;
+      else price = count * 120;
+    }
 
-}
+    if (isCassetteOrDucted) {
+      if (count === 1) price = 220;
+      else price = count * 180;
+    }
+  }
 
-}
-
-if(serviceType === "deep"){
-
-if(unitType === "wall" || unitType === "floor"){
-
-if(unitCount === 1) price = 180
-else price = unitCount * 120
-
-}
-
-if(unitType === "cassette" || unitType === "ducted"){
-
-if(unitCount === 1) price = 220
-else price = unitCount * 180
-
-}
-
-}
-
-return price
-
-}, [serviceType, unitType, unitCount])
-
+  return price;
+}, [indoorUnits, indoorUnitType, enquiryType]);
+  
   const detailsComplete =
     fullName.trim() &&
     phone.trim() &&
