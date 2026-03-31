@@ -169,14 +169,14 @@ export default function Page() {
     postcode.trim();
 
   const step1Complete = detailsComplete;
-  const step2Complete =
-    indoorUnits &&
-    outdoorUnits &&
-    brand &&
-    systemType &&
-    indoorUnitType &&
-    lastServiced &&
-    enquiryType;
+ const step2Complete =
+  indoorUnits !== "1" ||
+  outdoorUnits !== "1" ||
+  brand !== "Daikin" ||
+  systemType !== "Single split" ||
+  indoorUnitType !== "Wall mounted" ||
+  lastServiced !== "Within 12 months" ||
+  enquiryType !== "Routine service";
 
   const unitCount = indoorUnits === "5+" ? 5 : Number(indoorUnits);
 
