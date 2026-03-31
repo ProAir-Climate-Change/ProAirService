@@ -119,6 +119,8 @@ export default function Page() {
     email.trim() &&
     postcode.trim();
 
+  const unitCount = indoorUnits === "5+" ? 5 : Number(indoorUnits);
+
   const servicePrice = useMemo(() => {
     const count = indoorUnits === "5+" ? 5 : Number(indoorUnits);
     const isDeep = enquiryType === "Deep clean";
@@ -151,6 +153,33 @@ export default function Page() {
 
     return price;
   }, [indoorUnits, indoorUnitType, enquiryType]);
+
+  const pricingBreakdown = useMemo(() => {
+    const isDeep = enquiryType === "Deep clean";
+    const isCassetteOrDucted =
+      indoorUnitType === "Cassette" || indoorUnitType === "Ducted grille";
+
+    const firstUnitPrice = isDeep ? 180 : 130;
+    const total = servicePrice;
+    const undiscountedBase = firstUnitPrice * unitCount;
+
+    let upliftPerUnit = 0;
+    if (isCassetteOrDucted) {
+      upliftPerUnit = isDeep ? 25 : 15;
+    }
+
+    const undiscountedTotal = undiscountedBase + upliftPerUnit * unitCount;
+    const savings = Math.max(0, undiscountedTotal - total);
+
+    return {
+      firstUnitPrice,
+      total,
+      savings,
+      hasDiscount: unitCount > 1 && savings > 0,
+      isDeep,
+      isCassetteOrDucted,
+    };
+  }, [enquiryType, indoorUnitType, servicePrice, unitCount]);
 
   const serviceSummary = useMemo(() => {
     return {
@@ -331,7 +360,7 @@ export default function Page() {
 
             <div style={twoColGridStyle}>
               <div>
-                <label>Number of indoor units</label>
+                <label>Number of units to service</label>
                 <select
                   value={indoorUnits}
                   onChange={(e) => setIndoorUnits(e.target.value)}
@@ -497,7 +526,7 @@ export default function Page() {
             >
               <strong>Service summary</strong>
               <p style={{ margin: "10px 0 0 0", color: "#475569" }}>
-                {indoorUnits} indoor unit(s) • {brand} • {systemType} •{" "}
+                {indoorUnits} unit(s) • {brand} • {systemType} •{" "}
                 {indoorUnitType}
               </p>
               <p style={{ margin: "8px 0 0 0", color: "#475569" }}>
@@ -534,6 +563,7 @@ export default function Page() {
                     marginBottom: "10px",
                     fontSize: "13px",
                     color: "#374151",
+                    lineHeight: 1.6,
                   }}
                 >
                   ✔ F-Gas certified engineers
@@ -549,15 +579,66 @@ export default function Page() {
                     borderRadius: "12px",
                     padding: "16px",
                     marginTop: "20px",
+                    border: "1px solid #dbe6ff",
                   }}
                 >
                   <strong>Estimated service price</strong>
 
-                  <p style={{ fontSize: "22px", marginTop: "6px" }}>
-                    £{servicePrice.toLocaleString()} + VAT
+                  <p
+                    style={{
+                      fontSize: "28px",
+                      marginTop: "8px",
+                      marginBottom: "10px",
+                      fontWeight: 700,
+                    }}
+                  >
+                    £{pricingBreakdown.total.toLocaleString()} + VAT
                   </p>
 
-                  <p style={{ fontSize: "13px", color: "#64748b" }}>
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      color: "#475569",
+                      margin: "0 0 8px 0",
+                    }}
+                  >
+                    First unit from £{pricingBreakdown.firstUnitPrice} + VAT
+                  </p>
+
+                  {pricingBreakdown.hasDiscount && (
+                    <p
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 700,
+                        color: "#166534",
+                        margin: "0 0 8px 0",
+                      }}
+                    >
+                      Multi-unit discount applied — saving £
+                      {pricingBreakdown.savings.toLocaleString()} + VAT
+                    </p>
+                  )}
+
+                  {pricingBreakdown.isCassetteOrDucted && (
+                    <p
+                      style={{
+                        fontSize: "13px",
+                        color: "#92400e",
+                        margin: "0 0 8px 0",
+                      }}
+                    >
+                      Includes uplift for cassette / ducted style units.
+                    </p>
+                  )}
+
+                  <p
+                    style={{
+                      fontSize: "13px",
+                      color: "#64748b",
+                      marginBottom: 0,
+                      lineHeight: 1.5,
+                    }}
+                  >
                     Estimated price based on the details provided. Final price
                     may vary depending on access, unit type, system condition
                     and location.
@@ -572,21 +653,6 @@ export default function Page() {
                   {submitting ? "Sending..." : "Send service enquiry"}
                 </button>
               </>
-            )}
-
-            {submitMessage && (
-              <p
-                style={{
-                  marginTop: "12px",
-                  marginBottom: 0,
-                  fontWeight: 700,
-                  color: submitMessage.includes("Thanks")
-                    ? "#166534"
-                    : "#b91c1c",
-                }}
-              >
-                {submitMessage}
-              </p>
             )}
 
             {!customerDetailsComplete && (
@@ -625,6 +691,21 @@ export default function Page() {
                   ✔ Local F-Gas certified engineers
                 </p>
               </div>
+            )}
+
+            {submitMessage && (
+              <p
+                style={{
+                  marginTop: "12px",
+                  marginBottom: 0,
+                  fontWeight: 700,
+                  color: submitMessage.includes("Thanks")
+                    ? "#166534"
+                    : "#b91c1c",
+                }}
+              >
+                {submitMessage}
+              </p>
             )}
           </form>
         </div>
@@ -668,6 +749,7 @@ const buttonStyle = {
   fontWeight: 700,
   cursor: "pointer",
   boxShadow: "0 8px 20px rgba(30,58,138,0.25)",
+  marginTop: "16px",
 };
 
 const waStyle = {
