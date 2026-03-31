@@ -100,61 +100,57 @@ export default function Page() {
   const [lastServiced, setLastServiced] = useState("Within 12 months");
   const [enquiryType, setEnquiryType] = useState("Routine service");
   const [timeframe, setTimeframe] = useState("");
-  const customerDetailsComplete =
-  fullName.trim() &&
-  phone.trim() &&
-  email.trim() &&
-  postcode.trim();
-  const leadSentRef = useRef(false);
-
-
   const [notes, setNotes] = useState("");
   const [accessNotes, setAccessNotes] = useState("");
-
   const [submitting, setSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
 
-  const servicePrice = useMemo(() => {
-  const count = indoorUnits === "5+" ? 5 : Number(indoorUnits);
-  const isDeep = enquiryType === "Deep clean";
-  const isCassetteOrDucted =
-    indoorUnitType === "Cassette" || indoorUnitType === "Ducted grille";
+  const leadSentRef = useRef(false);
 
-  let price = 0;
+  const customerDetailsComplete =
+    fullName.trim() &&
+    phone.trim() &&
+    email.trim() &&
+    postcode.trim();
 
-  if (!isDeep) {
-    // Standard service pricing
-    if (count === 1) price = 130;
-    else if (count === 2) price = 230; // £115 each
-    else if (count === 3) price = 315; // £105 each
-    else if (count === 4) price = 400; // £100 each
-    else price = count * 95; // 5+ units
-  } else {
-    // Deep clean pricing
-    if (count === 1) price = 180;
-    else if (count === 2) price = 340; // £170 each
-    else if (count === 3) price = 480; // £160 each
-    else if (count === 4) price = 600; // £150 each
-    else price = count * 145; // 5+ units
-  }
-
-  // Small uplift for more time-intensive unit types
-  if (isCassetteOrDucted) {
-    if (!isDeep) {
-      price += count * 15;
-    } else {
-      price += count * 25;
-    }
-  }
-
-  return price;
-}, [indoorUnits, indoorUnitType, enquiryType]);
-  
   const detailsComplete =
     fullName.trim() &&
     phone.trim() &&
     email.trim() &&
     postcode.trim();
+
+  const servicePrice = useMemo(() => {
+    const count = indoorUnits === "5+" ? 5 : Number(indoorUnits);
+    const isDeep = enquiryType === "Deep clean";
+    const isCassetteOrDucted =
+      indoorUnitType === "Cassette" || indoorUnitType === "Ducted grille";
+
+    let price = 0;
+
+    if (!isDeep) {
+      if (count === 1) price = 130;
+      else if (count === 2) price = 230;
+      else if (count === 3) price = 315;
+      else if (count === 4) price = 400;
+      else price = count * 95;
+    } else {
+      if (count === 1) price = 180;
+      else if (count === 2) price = 340;
+      else if (count === 3) price = 480;
+      else if (count === 4) price = 600;
+      else price = count * 145;
+    }
+
+    if (isCassetteOrDucted) {
+      if (!isDeep) {
+        price += count * 15;
+      } else {
+        price += count * 25;
+      }
+    }
+
+    return price;
+  }, [indoorUnits, indoorUnitType, enquiryType]);
 
   const serviceSummary = useMemo(() => {
     return {
@@ -222,33 +218,35 @@ export default function Page() {
       setSubmitting(false);
     }
   }
-useEffect(() => {
-  if (!customerDetailsComplete || leadSentRef.current) return;
 
-  const sendLead = async () => {
-  try {
-    const response = await fetch("/api/service-lead", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(serviceSummary)
-    });
+  useEffect(() => {
+    if (!customerDetailsComplete || leadSentRef.current) return;
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || "Service lead request failed");
-    }
+    const sendLead = async () => {
+      try {
+        const response = await fetch("/api/service-lead", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(serviceSummary),
+        });
 
-    leadSentRef.current = true;
-    console.log("Service lead sent successfully");
-  } catch (error) {
-    console.error("Service lead send failed", error);
-  }
-};
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || "Service lead request failed");
+        }
 
-  sendLead();
-}, [customerDetailsComplete, serviceSummary]);
+        leadSentRef.current = true;
+        console.log("Service lead sent successfully");
+      } catch (error) {
+        console.error("Service lead send failed", error);
+      }
+    };
+
+    sendLead();
+  }, [customerDetailsComplete, serviceSummary]);
+
   return (
     <div
       style={{
@@ -507,116 +505,127 @@ useEffect(() => {
                 {timeframe ? ` • Timeframe: ${timeframe}` : ""}
               </p>
             </div>
-            
-{customerDetailsComplete && (
-<>
-            <a href={whatsappHref} target="_blank" rel="noreferrer" style={waStyle}>
-              📲 Send this service enquiry to ProAir on WhatsApp
-            </a>
 
-            <p style={{ fontSize: "12px", color: "#64748b", marginTop: "8px" }}>
-              Most customers receive a reply during working hours within a short
-              time.
-            </p>
+            {customerDetailsComplete && (
+              <>
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={waStyle}
+                >
+                  📲 Send this service enquiry to ProAir on WhatsApp
+                </a>
 
-            <div
-              style={{
-                marginTop: "12px",
-                marginBottom: "10px",
-                fontSize: "13px",
-                color: "#374151",
-              }}
-            >
-              ✔ F-Gas certified engineers
-              <br />
-              ✔ Routine servicing, deep cleans and fault callouts
-              <br />
-              ✔ Domestic and small commercial systems
-            </div>
+                <p
+                  style={{
+                    fontSize: "12px",
+                    color: "#64748b",
+                    marginTop: "8px",
+                  }}
+                >
+                  Most customers receive a reply during working hours within a
+                  short time.
+                </p>
 
-{customerDetailsComplete && (
+                <div
+                  style={{
+                    marginTop: "12px",
+                    marginBottom: "10px",
+                    fontSize: "13px",
+                    color: "#374151",
+                  }}
+                >
+                  ✔ F-Gas certified engineers
+                  <br />
+                  ✔ Routine servicing, deep cleans and fault callouts
+                  <br />
+                  ✔ Domestic and small commercial systems
+                </div>
 
-<div
-style={{
-background:"#eef4ff",
-borderRadius:"12px",
-padding:"16px",
-marginTop:"20px"
-}}
->
+                <div
+                  style={{
+                    background: "#eef4ff",
+                    borderRadius: "12px",
+                    padding: "16px",
+                    marginTop: "20px",
+                  }}
+                >
+                  <strong>Estimated service price</strong>
 
-<strong>Estimated service price</strong>
+                  <p style={{ fontSize: "22px", marginTop: "6px" }}>
+                    £{servicePrice.toLocaleString()} + VAT
+                  </p>
 
-<div
-  style={{
-    background: "#eef4ff",
-    borderRadius: "12px",
-    padding: "16px",
-    marginTop: "20px",
-  }}
->
-  <strong>Estimated service price</strong>
+                  <p style={{ fontSize: "13px", color: "#64748b" }}>
+                    Estimated price based on the details provided. Final price
+                    may vary depending on access, unit type, system condition
+                    and location.
+                  </p>
+                </div>
 
-  <p style={{ fontSize: "22px", marginTop: "6px" }}>
-    £{servicePrice.toLocaleString()} + VAT
-  </p>
+                <button
+                  type="submit"
+                  style={buttonStyle}
+                  disabled={!detailsComplete || submitting}
+                >
+                  {submitting ? "Sending..." : "Send service enquiry"}
+                </button>
+              </>
+            )}
 
-  <p style={{ fontSize: "13px", color: "#64748b" }}>
-    Estimated price based on the details provided. Final price may vary depending
-    on access, unit type, system condition and location.
-  </p>
-</div>
-
-<button
-  type="submit"
-  style={buttonStyle}
-  disabled={!detailsComplete || submitting}
->
-  {submitting ? "Sending..." : "Send service enquiry"}
-</button>
-)}
             {submitMessage && (
               <p
                 style={{
                   marginTop: "12px",
                   marginBottom: 0,
                   fontWeight: 700,
-                  color: submitMessage.includes("Thanks") ? "#166534" : "#b91c1c",
+                  color: submitMessage.includes("Thanks")
+                    ? "#166534"
+                    : "#b91c1c",
                 }}
               >
                 {submitMessage}
               </p>
             )}
+
             {!customerDetailsComplete && (
-  <div
-    style={{
-      marginTop: "28px",
-      padding: "18px",
-      borderRadius: "16px",
-      background: "linear-gradient(135deg,#eef4ff,#f8fafc)",
-      border: "1px solid #dbe6ff",
-      textAlign: "center",
-      boxShadow: "0 8px 18px rgba(30,58,138,0.12)"
-    }}
-  >
-    <div style={{ fontSize: "22px", marginBottom: "6px" }}>
-      🔓 Unlock your service price
-    </div>
+              <div
+                style={{
+                  marginTop: "28px",
+                  padding: "18px",
+                  borderRadius: "16px",
+                  background: "linear-gradient(135deg,#eef4ff,#f8fafc)",
+                  border: "1px solid #dbe6ff",
+                  textAlign: "center",
+                  boxShadow: "0 8px 18px rgba(30,58,138,0.12)",
+                }}
+              >
+                <div style={{ fontSize: "22px", marginBottom: "6px" }}>
+                  🔓 Unlock your service price
+                </div>
 
-    <p style={{ margin: "0", fontSize: "14px", color: "#475569" }}>
-      Enter your contact details at the top of the page to instantly reveal your
-      estimated service cost and send your enquiry to a ProAir engineer.
-    </p>
+                <p style={{ margin: "0", fontSize: "14px", color: "#475569" }}>
+                  Enter your contact details at the top of the page to instantly
+                  reveal your estimated service cost and send your enquiry to a
+                  ProAir engineer.
+                </p>
 
-    <p style={{ marginTop: "10px", fontSize: "13px", color: "#64748b" }}>
-      ✔ Takes less than 30 seconds  
-      <br />
-      ✔ No obligation quote  
-      <br />
-      ✔ Local F-Gas certified engineers
-    </p>
-  </div>
-)}
+                <p
+                  style={{
+                    marginTop: "10px",
+                    fontSize: "13px",
+                    color: "#64748b",
+                  }}
+                >
+                  ✔ Takes less than 30 seconds
+                  <br />
+                  ✔ No obligation quote
+                  <br />
+                  ✔ Local F-Gas certified engineers
+                </p>
+              </div>
+            )}
           </form>
         </div>
       </div>
