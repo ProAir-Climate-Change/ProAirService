@@ -5,15 +5,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 const brandOptions = [
   "Daikin",
   "Mitsubishi Electric",
-  "Midea",
   "Fujitsu",
   "Panasonic",
+  "Midea",
+  "Toshiba",
   "Samsung",
   "LG",
-  "Toshiba",
-  "Carrier",
-  "Hitachi",
-  "Haier",
   "Other / Not sure",
 ];
 
@@ -118,44 +115,35 @@ export default function Page() {
   const [submitMessage, setSubmitMessage] = useState("");
 
   const servicePrice = useMemo(() => {
+  const count = indoorUnits === "5+" ? 5 : Number(indoorUnits);
+  const isDeep = enquiryType === "Deep clean";
+  const isCassetteOrDucted =
+    indoorUnitType === "Cassette" || indoorUnitType === "Ducted grille";
+
   let price = 0;
 
-  const count = Number(indoorUnits);
-
-  const isDeep =
-    enquiryType === "Deep clean";
-
-  const isWallOrFloor =
-    indoorUnitType === "Wall mounted" ||
-    indoorUnitType === "Floor mounted";
-
-  const isCassetteOrDucted =
-    indoorUnitType === "Cassette" ||
-    indoorUnitType === "Ducted grille";
-
   if (!isDeep) {
-    if (isWallOrFloor) {
-      if (count === 1) price = 125;
-      else if (count <= 4) price = count * 60;
-      else price = count * 45;
-    }
-
-    if (isCassetteOrDucted) {
-      if (count === 1) price = 150;
-      else if (count <= 4) price = count * 70;
-      else price = count * 55;
-    }
+    // Standard service pricing
+    if (count === 1) price = 130;
+    else if (count === 2) price = 230; // £115 each
+    else if (count === 3) price = 315; // £105 each
+    else if (count === 4) price = 400; // £100 each
+    else price = count * 95; // 5+ units
+  } else {
+    // Deep clean pricing
+    if (count === 1) price = 180;
+    else if (count === 2) price = 340; // £170 each
+    else if (count === 3) price = 480; // £160 each
+    else if (count === 4) price = 600; // £150 each
+    else price = count * 145; // 5+ units
   }
 
-  if (isDeep) {
-    if (isWallOrFloor) {
-      if (count === 1) price = 180;
-      else price = count * 120;
-    }
-
-    if (isCassetteOrDucted) {
-      if (count === 1) price = 220;
-      else price = count * 180;
+  // Small uplift for more time-intensive unit types
+  if (isCassetteOrDucted) {
+    if (!isDeep) {
+      price += count * 15;
+    } else {
+      price += count * 25;
     }
   }
 
@@ -545,14 +533,7 @@ useEffect(() => {
               <br />
               ✔ Domestic and small commercial systems
             </div>
-<div
-style={{
-background:"#eef4ff",
-borderRadius:"12px",
-padding:"16px",
-marginTop:"20px"
-}}
->
+
 {customerDetailsComplete && (
 
 <div
@@ -572,12 +553,10 @@ marginTop:"20px"
 
 </p>
 
-<p style={{fontSize:"13px",color:"#64748b"}}>
-
-Final price may vary depending on access, system condition and location.
-
+<p style={{ fontSize: "13px", color: "#64748b" }}>
+  Estimated price based on the details provided. Final price may vary depending
+  on access, unit type, system condition and location.
 </p>
-
 </div>
 
 )}
