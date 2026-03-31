@@ -559,8 +559,6 @@ marginTop:"20px"
 </p>
 </div>
 
-)}
-
 </div>
             <button type="submit" style={buttonStyle} disabled={!detailsComplete || submitting}>
               {submitting ? "Sending..." : "Send service enquiry"}
