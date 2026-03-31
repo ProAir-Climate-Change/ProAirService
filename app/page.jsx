@@ -547,22 +547,33 @@ marginTop:"20px"
 
 <strong>Estimated service price</strong>
 
-<p style={{fontSize:"22px",marginTop:"6px"}}>
+<div
+  style={{
+    background: "#eef4ff",
+    borderRadius: "12px",
+    padding: "16px",
+    marginTop: "20px",
+  }}
+>
+  <strong>Estimated service price</strong>
 
-£{servicePrice.toLocaleString()} + VAT
+  <p style={{ fontSize: "22px", marginTop: "6px" }}>
+    £{servicePrice.toLocaleString()} + VAT
+  </p>
 
-</p>
-
-<p style={{ fontSize: "13px", color: "#64748b" }}>
-  Estimated price based on the details provided. Final price may vary depending
-  on access, unit type, system condition and location.
-</p>
+  <p style={{ fontSize: "13px", color: "#64748b" }}>
+    Estimated price based on the details provided. Final price may vary depending
+    on access, unit type, system condition and location.
+  </p>
 </div>
 
-            <button type="submit" style={buttonStyle} disabled={!detailsComplete || submitting}>
-              {submitting ? "Sending..." : "Send service enquiry"}
-            </button>
-</>
+<button
+  type="submit"
+  style={buttonStyle}
+  disabled={!detailsComplete || submitting}
+>
+  {submitting ? "Sending..." : "Send service enquiry"}
+</button>
 )}
             {submitMessage && (
               <p
